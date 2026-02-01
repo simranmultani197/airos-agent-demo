@@ -21,8 +21,12 @@ export GROQ_API_KEY=your_key_here
 | 6 | `examples/error_handling_agent.py` | `ErrorClassifier`, severity, recovery hints, non-recoverable set | No |
 | 7 | `examples/storage_agent.py` | `InMemoryStorage`, `Storage` (SQLite), settings, `set_default_storage` | No |
 | 8 | `examples/full_pipeline_agent.py` | All features combined: Fuse + Sentinel + Medic + Budget + Pricing + Storage | No |
+| 9 | `examples/langchain_adapter_agent.py` | LangChain adapter: wrap_node, wrap_chain, wrap_tool, middleware, Medic healing | Yes |
+| 10 | `examples/langgraph_adapter_agent.py` | LangGraph adapter: wrap_node, StateGraph pipeline, Fuse loop detection, middleware | No |
+| 11 | `examples/crewai_adapter_agent.py` | CrewAI adapter: wrap_agent, wrap_task, wrap_crew, real Crew kickoff | Yes |
+| 12 | `examples/autogen_adapter_agent.py` | AutoGen adapter: wrap_agent, wrap_function, GroupChat, real agent conversation | Yes |
 
-### Run without an API key (examples 1, 3–8)
+### Run without an API key (examples 1, 3–8, 10)
 
 ```bash
 python examples/basic_agent.py
@@ -32,19 +36,31 @@ python examples/cost_tracking_agent.py
 python examples/error_handling_agent.py
 python examples/storage_agent.py
 python examples/full_pipeline_agent.py
+python examples/langgraph_adapter_agent.py
 ```
 
-### Run with Groq API key (example 2)
+### Run with Groq API key (examples 2, 9, 11, 12)
 
 ```bash
 export GROQ_API_KEY=your_key_here
 python examples/self_healing_agent.py
+python examples/langchain_adapter_agent.py
+python examples/crewai_adapter_agent.py
+python examples/autogen_adapter_agent.py
 ```
 
 ### Run the full pipeline with real LLM (requires API key)
 
 ```bash
 python -c "from agent.graph import run_pipeline; run_pipeline('AI safety')"
+```
+
+### Adapter Dependencies
+
+```bash
+pip install langchain-core langgraph        # For LangChain/LangGraph examples
+pip install crewai litellm                  # For CrewAI example
+pip install "pyautogen==0.2.35"             # For AutoGen example (legacy API)
 ```
 
 ## Edge Case Tests (213 tests)
@@ -79,3 +95,7 @@ pytest tests/ -v
 - **Storage** — In-memory + SQLite trace persistence
 - **@reliable** — All parameter combinations tested
 - **Thread safety** — Concurrent stress tests with 50+ threads
+- **LangChain adapter** — wrap_node, wrap_chain (RunnableLambda), wrap_tool, middleware decorators
+- **LangGraph adapter** — wrap_node, full StateGraph pipeline, Fuse loop detection, middleware
+- **CrewAI adapter** — wrap_agent, wrap_task, wrap_crew, real Crew kickoff (Pydantic-safe)
+- **AutoGen adapter** — wrap_agent, wrap_function, GroupChat wrapping, real agent conversation
